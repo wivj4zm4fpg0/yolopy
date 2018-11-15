@@ -17,6 +17,12 @@ parser.add_argument('--classes', required=True,
 parser.add_argument('--scale', default=0.00392, type=int)
 parser.add_argument('--width', default=416, type=int)
 parser.add_argument('--height', default=416, type=int)
+parser.add_argument(
+    '--conf_threshold', default=0.5, type=float
+)
+parser.add_argument(
+    '--nms_threshold', default=0.4, type=float
+)
 args = parser.parse_args()
 
 
@@ -53,15 +59,15 @@ if __name__ == '__main__':
         class_ids: list = []
         confidences = []
         boxes = []
-        conf_threshold = 0.5
-        nms_threshold = 0.4
+        conf_threshold = args.conf_threshold
+        nms_threshold = args.nms_threshold
 
         for out in outs:
             for detection in out:
                 scores = detection[5:]
                 class_id = np.argmax(scores)
                 confidence = scores[class_id]
-                if confidence > 0.5:
+                if confidence > conf_threshold:
                     center_x = int(detection[0] * image_width)
                     center_y = int(detection[1] * image_height)
                     w = int(detection[2] * image_width)
